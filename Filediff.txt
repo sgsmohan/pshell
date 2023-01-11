@@ -1,0 +1,76 @@
+cls
+
+# Set the paths for the two folders
+
+$folderA = 'D:\folder 1\'
+
+$folderB = 'D:\folder 2\'
+
+# Get the list of files in folder-A
+
+$filesA = Get-ChildItem -Path $folderA -File
+
+# Iterate over the list of files in folder-A
+
+foreach ($fileA in $filesA) {
+
+    # Get the corresponding file in folder-B
+
+    $fileB = (Get-ChildItem -Path $folderB -File -Filter $fileA.Name)
+
+    if ($fileB -ne $null) {
+
+        # Get the contents of both files
+
+        $contentsA = Get-Content $fileA.FullName
+
+        $contentsB = Get-Content $fileB.FullName
+
+        
+
+        # check if number of lines in both files are same
+
+        if ($contentsA.Count -ne $contentsB.Count) {
+
+            Write-Output "Line numbers are different for File $($fileA.Name)"
+
+        } else {
+
+            $line_number = 1
+
+            # Iterate through the contents of the fileA
+
+            for($i=0; $i -lt $contentsA.Count; $i++) {
+
+                # check if line from fileA is not present in fileB or line from fileA is blank
+
+                if($contentsA[$i] -ne $contentsB[$i]) {
+
+                    if ([string]::IsNullOrWhiteSpace($contentsA[$i])) {
+
+                        $line_number++
+
+                        continue
+
+                    }
+
+                    Write-Output "File $($fileA.Name) - Line $line_number - $($contentsA[$i])"
+
+                }
+
+                $line_number++
+
+            }
+
+        }
+
+    } 
+
+    else {
+
+        Write-Output "File $($fileA.Name) doesn't exists in Folder B"
+
+    }
+
+}
+
